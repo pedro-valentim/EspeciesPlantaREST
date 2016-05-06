@@ -9,10 +9,16 @@ import com.db4o.query.Query;
 
 public class Model{
 	
-	ObjectContainer especies = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "../especies.db4o");
+	ObjectContainer especies = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "../especies3.db4o");
 	
-	public void addEspecie(Especie especie){
-		especies.store(especie);
+	public boolean addEspecie(Especie especie){
+		try {
+			especies.store(especie);
+			especies.commit();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	public List<Especie> procuraEspeciePorEspecificacoes(Especificacoes espec){

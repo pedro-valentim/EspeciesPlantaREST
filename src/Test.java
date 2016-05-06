@@ -8,14 +8,13 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONException{
 		
-		initializeModel();
-		
 		Spark.staticFileLocation("/public");
 				
-		REST controller = new REST(model); 
+		REST controller = new REST(model);
 				
 		controller.getEspecieNomeCientifico();
 		controller.getEspecieByEspecificacoes();
+		controller.newEspecie();
 				
 		
 	}
