@@ -61,11 +61,12 @@
     </style>
 
     <script src="./js/jquery-latest.min.js" type="text/javascript"></script>   
+    <script src="./js/general.js" type="text/javascript"></script>   
 
   	<script type="text/javascript">
   		$(document).ready(function(){
   		
-  			$.getJSON("/especies/especificacoes/?limit=3&format=json&jsoncallback=",function(data) {
+  			$.getJSON("/especies/especificacoes/?limit=3&format=json&jsoncallback=", location.queryObject, function(data) {
 
   					var itemsInst = [];
   					
@@ -83,8 +84,6 @@
   					
   			});
 
-        
-
 
   			$('#dataInstitution').on('change', function(){
   				
@@ -95,7 +94,6 @@
   					
   					$.each(data, function(i){
   					
-  					
   						itemsCourse.push("<option>" + this.courseName + "</option>");
   						
   					});
@@ -103,7 +101,6 @@
   					$("#dataCourse").empty().append('<option>Escolha o Curso</option>');
   							
   					$("#dataCourse").append(itemsCourse);
-  					
   					
   					
   				});
@@ -153,27 +150,6 @@
 
 
   			});
-
-  
-        var item_especie_card = function( item ) {
-
-          var especieItem = "<div class='section__circle-container mdl-cell mdl-cell--2-col mdl-cell--1-col-phone'><div class='section__circle-container__circle mdl-color--primary'></div></div>";
-
-                especieItem += "<div class='section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone'>";
-
-                  especieItem += "<h5>" + item.nomeCientifico + " (" + item.especificacoes.nomePopular + ")</h5>";
-
-                  especieItem += "<span>A classe e o gênero dessa espécie " + item.especificacoes.tipo.toLowerCase() + " é <em>" + item.especificacoes.classe + "</em> e <em>" + item.especificacoes.genero + " </em>, respectivamente. Faz parte da família <em>" + item.especificacoes.familia + "</em>. ";
-
-                  if ( item.especificacoes.exotica ) especieItem += "É considerada uma espécie <em>exótica</em>. ";
-
-                  especieItem += "O autor (ou a autora) desta espécie é <a href='especies.html?nomeautor="+ item.especificacoes.nomeAutor +"'>" + item.especificacoes.nomeAutor + "</a>.</span>";
-
-                especieItem += "</div>";
-
-            return especieItem;
-
-        };
 
   		});
   		

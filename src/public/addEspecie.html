@@ -64,74 +64,41 @@
 
     <script type="text/javascript">
       $(document).ready(function(){
+
+
+        $("#genero, #especie").click(function() {
+          $("#nomeCientifico").focus();
+        });
       
         $("#nomeCientifico").blur( function( evt ) {
 
           var data = $(this).val().trim().split(" ");
           
+          $("#genero, #especie").parent().removeClass( "is-dirty" );
+          $("#genero, #especie").val("");
+
           if (data[0]) {
 
             $("#genero").val( data[0] );
             $("#genero").parent().addClass( "is-dirty" );
 
-          } else {
-
-            $("#genero").parent().removeClass( "is-dirty" );
-
           }
 
           if (data[1]) {
 
-            $("#especie").val( data[1] );
+            $("#especie").val( data[1].charAt(0).toUpperCase() + data[1].slice(1) );
             $("#especie").parent().addClass( "is-dirty" );
 
-          } else {
-
-            $("#especie").parent().removeClass( "is-dirty" );
-
           }
-
-        });
-
-        $("#genero, #especie").blur( function( evt ) {
-
-          if ( !($("#genero").val().trim() + $("#especie").val().toLowerCase().trim()) ) {
-
-            $("#nomeCientifico").parent().removeClass( "is-dirty" );
-            $("#nomeCientifico").val("");
-            $(this).val("").focus();
-
-          }
-
-          if (!$(this).val().trim()) $("#nomeCientifico").parent().addClass( "is-dirty" );
-          
-          $("#nomeCientifico").val( $("#genero").val() + " " + $("#especie").val().toLowerCase() );
-          
-          if (!$("#genero").val().trim()) $("#genero").parent().removeClass( "is-dirty" );
-
-          if (!$("#especie").val().toLowerCase().trim()) $("#especie").parent().removeClass( "is-dirty" );
 
         });
 
         undo = function(event) {
-          alert('undo here');
-        };
-
-        retry = function(event) {
-          $("#formAddEspecie")[0].reset();
-        };
-
-        $("#formAddEspecie").submit(function(e) {
-
-            e.preventDefault();
-
-            var cadastro = $.post( "/especies", $("#formAddEspecie").serialize() );
+          var cadastro = $.post( "/especies", $("#formAddEspecie").serialize() );
  
             cadastro.done(function( data ) {
 
               var response = jQuery.parseJSON(data);
-
-              window.console.log( response );
 
               response = response[0];
               if ( response.status ) {
@@ -150,13 +117,48 @@
                 });
               }
             });
+        };
+
+        retry = function(event) {
+          $("#formAddEspecie")[0].reset();
+        };
+
+        $("#formAddEspecie [type=submit]").click(function(e) {
+
+          if($("#formAddEspecie")[0].checkValidity()) {
+            var cadastro = $.post( "/especies", $("#formAddEspecie").serialize() );
+ 
+            cadastro.done(function( data ) {
+
+              var response = jQuery.parseJSON(data);
+
+              response = response[0];
+              if ( response.status ) {
+                document.querySelector('#demo-snackbar-example').MaterialSnackbar.showSnackbar({
+                  message: 'Cadastrado com sucesso.',
+                  timeout: 2000,
+                  actionHandler: undo,
+                  actionText: 'Desfazer'
+                });
+              } else {
+                document.querySelector('#demo-snackbar-example').MaterialSnackbar.showSnackbar({
+                  message: response.error,
+                  timeout: 2000,
+                  actionHandler: retry,
+                  actionText: 'Tentar novamente'
+                });
+              }
+            });
+
+          }
+
             
 
         });
 
         $("#resetBtn").click(function() {
-          $(".is-dirty", this.parent("form")).each(function() {
-            $(this).removeClass("is-dirty");
+          $(".is-dirty", $(this).parents("form")).not(".getmdl-select").each(function() {
+            $(this).removeClass("is-valid is-focused is-dirty");
           });
         });
 
@@ -179,13 +181,9 @@
     </div>
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
-        <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-        </div>
-        <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-          <h3>Species REST Server</h3>
-        </div>
-        <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-        </div>
+        <div class="mdl-layout--large-screen-only mdl-layout__header-row"></div>
+        <div class="mdl-layout--large-screen-only mdl-layout__header-row"><h3>Species REST Server</h3></div>
+        <div class="mdl-layout--large-screen-only mdl-layout__header-row"></div>
         <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
           <a href="/" class="mdl-layout__tab">Visão Geral</a>
           <a href="addEspecie.html" class="mdl-layout__tab is-active">Cadastrar nova espécie</a>
@@ -203,23 +201,23 @@
               <h4>Cadastrar nova espécie</h4>
               Utilize o formulário abaixo para cadastrar uma nova espécie no banco de dados.
               
-              <form id="formAddEspecie" action="/especies" method="post">
+              <form id="formAddEspecie" action="/especies" method="post" novalidate onsubmit="return false;">
                 <div class="mdl-grid">
                   <div class="mdl-cell mdl-cell--4-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <input class="mdl-textfield__input" type="text" id="nomeCientifico" name="nomeCientifico"> <!--  required -->
+                      <input class="mdl-textfield__input" type="text" id="nomeCientifico" name="nomeCientifico" required>
                       <label class="mdl-textfield__label" for="nomeCientifico">Nome Cientifico</label>
                     </div>
                   </div>
                   <div class="mdl-cell mdl-cell--4-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <input class="mdl-textfield__input" type="text" id="genero" name="genero"> <!--  required -->
+                      <input class="mdl-textfield__input" type="text" id="genero" name="genero" readonly >
                       <label class="mdl-textfield__label" for="genero">Gênero</label>
                     </div>
                   </div>
                   <div class="mdl-cell mdl-cell--4-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <input class="mdl-textfield__input" type="text" id="especie" name="especie"> <!--  required -->
+                      <input class="mdl-textfield__input" type="text" id="especie" name="especie" readonly>
                       <label class="mdl-textfield__label" for="especie">Espécie</label>
                     </div>
                   </div>
@@ -233,21 +231,21 @@
                   </div>
                   <div class="mdl-cell mdl-cell--4-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <input class="mdl-textfield__input" type="text" id="classe" name="classe">
+                      <input class="mdl-textfield__input" type="text" id="classe" name="classe" required>
                       <label class="mdl-textfield__label" for="classe">Classe</label>
                     </div>
                   </div>
                   <div class="mdl-cell mdl-cell--4-col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <input class="mdl-textfield__input" type="text" id="familia" name="familia">
+                      <input class="mdl-textfield__input" type="text" id="familia" name="familia" required>
                       <label class="mdl-textfield__label" for="familia">Família</label>
                     </div>
                   </div>
                 </div>
                 <div class="mdl-grid">
-                  <div class="mdl-cell mdl-cell--5-col">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <input class="mdl-textfield__input" type="text" id="nomeautor" name="nomeautor">
+                  <div class="mdl-cell mdl-cell--6-col">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width: 100% !important;">
+                      <input class="mdl-textfield__input" type="text" id="nomeautor" name="nomeautor" required>
                       <label class="mdl-textfield__label" for="nomeautor">Nome do Autor</label>
                     </div>
                   </div>
@@ -265,7 +263,7 @@
                         </ul>
                     </div>
                   </div>
-                  <div class="mdl-cell mdl-cell--3-col">
+                  <div class="mdl-cell mdl-cell--2-col">
                     <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="exotica">
                       <input type="checkbox" id="exotica" class="mdl-checkbox__input">
                       <span class="mdl-checkbox__label">Exótica</span>
@@ -279,7 +277,7 @@
                     </button>
                   </div>
                   <div class="mdl-cell mdl-cell--6-col">
-                    <button type=""submit class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                    <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                       Cadastrar
                     </button>
                   </div>
