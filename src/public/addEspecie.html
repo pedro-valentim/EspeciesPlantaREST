@@ -61,6 +61,7 @@
     </style>
 
     <script src="./js/jquery-latest.min.js" type="text/javascript"></script>   
+    <script src="./js/general.js" type="text/javascript"></script>
 
     <script type="text/javascript">
       $(document).ready(function(){
@@ -126,6 +127,11 @@
         $("#formAddEspecie [type=submit]").click(function(e) {
 
           if($("#formAddEspecie")[0].checkValidity()) {
+
+            $("#exotica").val("");
+
+            if ($($("#exotica").parent()[0]).is(".is-checked")) $("#exotica").val("sim");
+
             var cadastro = $.post( "/especies", $("#formAddEspecie").serialize() );
  
             cadastro.done(function( data ) {

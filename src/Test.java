@@ -12,9 +12,8 @@ public class Test {
 				
 		REST controller = new REST(model);
 				
-		controller.getEspecieNomeCientifico();
+		controller.especieGetPostPutDelete();
 		controller.getEspecieByEspecificacoes();
-		controller.newEspecie();
 				
 		
 	}
